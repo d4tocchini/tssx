@@ -9,7 +9,9 @@
 
 /******************** DEFINITIONS ********************/
 
-#define DEFAULT_BUFFER_SIZE 1000000
+// D4 DEFAULT_BUFFER_SIZE was too big for macos (10.14), failed after 2+ clients
+// #define DEFAULT_BUFFER_SIZE 1000000
+#define DEFAULT_BUFFER_SIZE 65536
 
 // clang-format off
 #define DEFAULT_CONNECTION_OPTIONS_INITIALIZER \

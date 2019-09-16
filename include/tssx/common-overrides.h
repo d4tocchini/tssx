@@ -32,7 +32,8 @@ typedef pid_t (*real_fork_t)(void);
 int real_fcntl_set_flags(int fd, int command, int flag);
 int real_fcntl_get_flags(int fd, int command);
 
-pid_t real_fork(void);
+static real_fcntl_t real_fcntl;
+static real_fork_t  real_fork;
 
 /******************** COMMON OVERRIDES ********************/
 

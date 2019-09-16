@@ -6,14 +6,14 @@
 void connection_loop(int client_socket) {
 	char buffer[MESSAGE_SIZE];
 	memset(buffer, '6', sizeof buffer);
-
+	printf("connection_loop\n");
 	while (true) {
 		int amount_read;
-
+		printf("w");
 		if (write(client_socket, buffer, MESSAGE_SIZE) < MESSAGE_SIZE) {
 			throw("Error writing on client side");
 		}
-
+		printf("r");
 		if ((amount_read = read(client_socket, buffer, MESSAGE_SIZE)) == 0) {
 			return;
 		} else if (amount_read < MESSAGE_SIZE) {
@@ -34,6 +34,7 @@ int request_client_socket() {
 	}
 
 	set_cloexec_flag(client_socket);
+	// set_nonblocking(client_socket);
 
 	return client_socket;
 }
@@ -53,11 +54,13 @@ void setup_client_socket(int client_socket) {
 
 int main(int argc, const char *argv[]) {
 	int client_socket;
-
+	printf("1");
 	client_socket = request_client_socket();
+	printf("2");
 	setup_client_socket(client_socket);
+	printf("3");
 	connection_loop(client_socket);
-
+	printf("4");
 	close(client_socket);
 
 	return EXIT_SUCCESS;

@@ -66,6 +66,7 @@ void _handle_select_requests(const fd_set* read_set,
 
 	for (int fd = 3; fd <= highest_fd; ++fd) {
 		if (fd == server_socket) continue;
+		// printf("fd %i")
 		if (!FD_ISSET(fd, read_set)) continue;
 
 		// read()/recv() returns zero when the peer disconnects

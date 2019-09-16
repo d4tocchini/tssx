@@ -35,7 +35,7 @@ int create_segment(int total_size) {
 void* attach_segment(int segment_id) {
 	void* shared_memory;
 
-	if ((shared_memory = shmat(segment_id, NULL, 0)) == (void*)-1) {
+	if ((shared_memory = shmat(segment_id, NULL, SHM_RND)) == (void*)-1) {
 		throw("Error attaching shared memory segment to address space");
 	}
 

@@ -21,30 +21,37 @@
 /******************** REAL FUNCTIONS ********************/
 
 // RTDL_NEXT = look in the symbol table of the *next* object file after this one
+static real_write_t _real_write;
 ssize_t real_write(int fd, const void* data, size_t size) {
-	return ((real_write_t)dlsym(RTLD_NEXT, "write"))(fd, data, size);
+	return (_real_write?_real_write:(_real_write=dlsym(RTLD_NEXT, "write")))(fd, data, size);
 }
 
+static real_read_t _real_read;
 ssize_t real_read(int fd, void* data, size_t size) {
-	return ((real_read_t)dlsym(RTLD_NEXT, "read"))(fd, data, size);
+	return (_real_read?_real_read:(_real_read=dlsym(RTLD_NEXT, "read")))(fd, data, size);
 }
 
+static real_send_t _real_send;
 ssize_t real_send(int fd, const void* buffer, size_t length, int flags) {
-	return ((real_send_t)dlsym(RTLD_NEXT, "send"))(fd, buffer, length, flags);
+	return (_real_send?_real_send:(_real_send=dlsym(RTLD_NEXT, "send")))(fd, buffer, length, flags);
 }
 
+static real_recv_t _real_recv;
 ssize_t real_recv(int fd, void* buffer, size_t length, int flags) {
-	return ((real_recv_t)dlsym(RTLD_NEXT, "recv"))(fd, buffer, length, flags);
+	return (_real_recv?_real_recv:(_real_recv=dlsym(RTLD_NEXT, "recv")))(fd, buffer, length, flags);
 }
 
+static real_sendmsg_t _real_sendmsg;
 ssize_t real_sendmsg(int fd, const struct msghdr* message, int flags) {
-	return ((real_sendmsg_t)dlsym(RTLD_NEXT, "sendmsg"))(fd, message, flags);
+	return (_real_sendmsg?_real_sendmsg:(_real_sendmsg=dlsym(RTLD_NEXT, "sendmsg")))(fd, message, flags);
 }
 
+static real_recvmsg_t _real_recvmsg;
 ssize_t real_recvmsg(int fd, struct msghdr* message, int flags) {
-	return ((real_recvmsg_t)dlsym(RTLD_NEXT, "recvmsg"))(fd, message, flags);
+	return (_real_recvmsg?_real_recvmsg:(_real_recvmsg=dlsym(RTLD_NEXT, "recvmsg")))(fd, message, flags);
 }
 
+static real_sendto_t _real_sendto;
 ssize_t real_sendto(int fd,
 										const void* buffer,
 										size_t length,
@@ -52,11 +59,12 @@ ssize_t real_sendto(int fd,
 										const struct sockaddr* dest_addr,
 										socklen_t dest_len) {
 	// clang-format off
-	return ((real_sendto_t)dlsym(RTLD_NEXT, "sendto"))
+	return (_real_sendto?_real_sendto:(_real_sendto=dlsym(RTLD_NEXT, "sendto")))
             (fd, buffer, length, flags, dest_addr, dest_len);
 	// clang-format on
 }
 
+static real_recvfrom_t _real_recvfrom;
 ssize_t real_recvfrom(int fd,
 											void* restrict buffer,
 											size_t length,
@@ -64,23 +72,27 @@ ssize_t real_recvfrom(int fd,
 											struct sockaddr* restrict address,
 											socklen_t* restrict address_len) {
 	// clang-format off
-	return ((real_recvfrom_t)dlsym(RTLD_NEXT, "recvfrom"))
+	return (_real_recvfrom?_real_recvfrom:(_real_recvfrom=dlsym(RTLD_NEXT, "recvfrom")))
             (fd, buffer, length, flags, address, address_len);
 	// clang-format on
 }
 
+static real_accept_t _real_accept;
 int real_accept(int fd, sockaddr* address, socklen_t* length) {
-	return ((real_accept_t)dlsym(RTLD_NEXT, "accept"))(fd, address, length);
+	return (_real_accept?_real_accept:(_real_accept=dlsym(RTLD_NEXT, "accept")))(fd, address, length);
 }
 
+static real_connect_t _real_connect;
 int real_connect(int fd, const sockaddr* address, socklen_t length) {
-	return ((real_connect_t)dlsym(RTLD_NEXT, "connect"))(fd, address, length);
+	return (_real_connect ? _real_connect : (_real_connect = dlsym(RTLD_NEXT, "connect")))(fd, address, length);
 }
 
+static real_close_t _real_close;
 int real_close(int fd) {
-	return ((real_close_t)dlsym(RTLD_NEXT, "close"))(fd);
+	return (_real_close ? _real_close : (_real_close = dlsym(RTLD_NEXT, "close")))(fd);
 }
 
+static real_getsockopt_t _real_getsockopt;
 int real_getsockopt(int fd,
 										int level,
 										int option_name,
@@ -88,7 +100,7 @@ int real_getsockopt(int fd,
 										socklen_t* restrict option_len) {
 	// Some nice lisp here
 	// clang-format off
-	return ((real_getsockopt_t)dlsym(RTLD_NEXT, "getsockopt"))
+	return (_real_getsockopt ? _real_getsockopt : (_real_getsockopt =dlsym(RTLD_NEXT, "getsockopt")))
       (fd, level, option_name, option_value, option_len);
 	// clang-format on
 }

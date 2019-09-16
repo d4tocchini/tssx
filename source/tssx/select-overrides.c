@@ -16,18 +16,18 @@
 #include "utility/utility.h"
 
 /******************** REAL FUNCTION ********************/
-
+static real_select_t _real_select;
 int real_select(int nfds,
 								fd_set* readfds,
 								fd_set* writefds,
 								fd_set* errorfds,
 								struct timeval* timeout) {
 	// clang-format off
-	return ((real_select_t)dlsym(RTLD_NEXT, "select"))
+	return (_real_select?_real_select:(_real_select=dlsym(RTLD_NEXT, "select")))
             (nfds, readfds, writefds, errorfds, timeout);
 	// clang-format on
 }
-
+static real_pselect_t _real_pselect;
 int real_pselect(int nfds,
 								 fd_set* readfds,
 								 fd_set* writefds,
@@ -35,7 +35,7 @@ int real_pselect(int nfds,
 								 const struct timespec* timeout,
 								 const sigset_t* sigmask) {
 	// clang-format off
-	return ((real_pselect_t)dlsym(RTLD_NEXT, "pselect"))
+	return (_real_pselect?_real_pselect:(_real_pselect=dlsym(RTLD_NEXT, "pselect")))
             (nfds, readfds, writefds, errorfds, timeout, sigmask);
 	// clang-format on
 }

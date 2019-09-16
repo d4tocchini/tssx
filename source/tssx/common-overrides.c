@@ -12,22 +12,22 @@
 
 /******************** REAL FUNCTIONS ********************/
 
+
 int real_fcntl_set_flags(int fd, int command, int flag) {
-	return ((real_fcntl_t)dlsym(RTLD_NEXT, "fcntl"))(fd, command, flag);
+	return real_fcntl(fd, command, flag);
 }
 
 int real_fcntl_get_flags(int fd, int command) {
-	return ((real_fcntl_t)dlsym(RTLD_NEXT, "fcntl"))(fd, command);
+	return real_fcntl(fd, command);
 }
 
-pid_t real_fork(void) {
-	return ((real_fork_t)dlsym(RTLD_NEXT, "fork"))();
-}
 
 /******************** COMMON OVERRIDES ********************/
 
 int fcntl(int fd, int command, ...) {
 	va_list argument;
+
+	if (!real_fcntl) real_fcntl = dlsym(RTLD_NEXT,"fcntl");
 
 	// Takes the argument pointer and the last positional argument
 	// Makes the argument pointer point to the first optional argument
@@ -46,6 +46,7 @@ int fcntl(int fd, int command, ...) {
 
 pid_t fork() {
 	bridge_add_user(&bridge);
+	if (!real_fork) real_fork = dlsym(RTLD_NEXT,"fork");
 	return real_fork();
 }
 
